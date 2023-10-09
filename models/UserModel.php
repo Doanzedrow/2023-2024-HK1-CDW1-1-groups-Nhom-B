@@ -12,6 +12,13 @@ class UserModel extends BaseModel
 
         return $user;
     }
+    public function findUserByMD5Id($id)
+    {
+        $sql = "SELECT * FROM users WHERE MD5(id) = '" . $id . "'";
+        $user = $this->select($sql);
+
+        return $user;
+    }
 
     public function findUser($keyword)
     {

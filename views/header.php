@@ -54,7 +54,7 @@ if (!empty($_GET['keyword'])) {
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="view_user.php?id=<?php echo $idName ?>">
+                        <li><a href="view_user.php?id=<?php echo ($idName) ?>">
                                 Profile
                             </a></li>
                         <li role="separator" class="divider"></li>
@@ -66,11 +66,11 @@ if (!empty($_GET['keyword'])) {
         </div><!-- /.navbar-collapse -->
     </nav>
     <?php if (!empty($_SESSION['message'])) { ?>
-    <div class="alert alert-warning" role="alert">
-        <?php
+        <div class="alert alert-warning" role="alert">
+            <?php
             echo $_SESSION['message'];
             unset($_SESSION['message']);
             ?>
-    </div>
+        </div>
     <?php } ?>
 </div>
