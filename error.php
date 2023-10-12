@@ -1,1 +1,0 @@
-<?php echo "Khong duoc truy cap";
