@@ -3,13 +3,18 @@ require_once 'models/UserModel.php';
 $userModel = new UserModel();
 $userName = NULL;
 $id = '';
-if(!empty($_SESSION['id'])) {
+if (!empty($_SESSION['id'])) {
     $id = $_SESSION['id'];
-    $userName = $userModel->findUserById($id);
+    $hash_id = md5($id);
+    //$encryptedId = base64_encode($id); //Mã hóa id c1: Sử dụng base64_encode
+    $key = 'khonghack'; // Khóa bí mậts
+    $hmac = hash_hmac('sha256', $hash_id, $key); // Tạo mã băm HMAC
+    $_SESSION['hmac'] = $hmac;
+    $userName = $userModel->findUserById($id); //Tìm kiếm tên user theo id_session
 }
 
 $keyword = '';
-if(!empty($_GET['keyword'])) {
+if (!empty($_GET['keyword'])) {
     $keyword = $_GET['keyword'];
 }
 ?>
@@ -45,14 +50,20 @@ if(!empty($_GET['keyword'])) {
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                         aria-expanded="false">
                         <i class="fa fa-user-circle-o"></i>
-                        <?php if (!empty($id)) {
-                            echo $userName[0]['name'];
+                        <?php
+                        if (!empty($id) && !empty($userName)) {
+                            echo $userName[0]['name']; // Nếu có id sẽ hiện tên user
                         } else {
                             echo "Account";
                         } ?> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="view_user.php?id=<?php echo $id ?>">Profile</a></li>
+                        <li><a href="view_user.php?id=<?php
+                        //urlencode($encryptedId) // c1: dùng urlencode
+                        echo md5($id)
+
+                            ?>">Profile</a>
+                        </li>
                         <li role="separator" class="divider"></li>
                         <li><a href="login.php">Login</a></li>
                         <li><a href="logout.php">Logout</a></li>
@@ -61,7 +72,7 @@ if(!empty($_GET['keyword'])) {
             </ul>
         </div><!-- /.navbar-collapse -->
     </nav>
-    <?php if(!empty($_SESSION['message'])){ ?>
+    <?php if (!empty($_SESSION['message'])) { ?>
         <div class="alert alert-warning" role="alert">
             <?php
             echo $_SESSION['message'];
