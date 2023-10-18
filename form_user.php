@@ -9,40 +9,53 @@ $_id = NULL;
 
 if (!empty($_GET['id'])) {
     $_id = $_GET['id'];
-    $user = $userModel->findUserById($_id);//Update existing user
+    $user = $userModel->findUserById($_id); //Update existing user
 }
 
+//C1: Sử dụng token CSRF
+$token = bin2hex(random_bytes(32)); // Tạo token CSRF
+$_SESSION['csrf_token'] = $token; // Lưu token trong phiên của người dùng
 
-if (!empty($_POST['submit'])) {
 
-    if (!empty($_id)) {
-        $userModel->updateUser($_POST);
-    } else {
-        $userModel->insertUser($_POST);
+if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
+    if (!empty($_POST['submit'])) {
+
+        if (!empty($_id)) {
+            $userModel->updateUser($_POST);
+        } else {
+            $userModel->insertUser($_POST);
+        }
+        header('location: list_users.php');
     }
-    header('location: list_users.php');
+} else {
+    header('location: messege.php');
 }
+
 
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>User form</title>
     <?php include 'views/meta.php' ?>
 </head>
+
 <body>
-    <?php include 'views/header.php'?>
+    <?php include 'views/header.php' ?>
     <div class="container">
 
-            <?php if ($user || !isset($_id)) { ?>
-                <div class="alert alert-warning" role="alert">
-                    User form
-                </div>
-                <form method="POST">
-                    <input type="hidden" name="id" value="<?php echo $_id ?>">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input class="form-control" name="name" placeholder="Name" value='<?php if (!empty($user[0]['name'])) echo $user[0]['name'] ?>'>
+        <?php if ($user || !isset($_id)) { ?>
+            <div class="alert alert-warning" role="alert">
+                User form
+            </div>
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <input type="hidden" name="id" value="<?php echo $_id ?>">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input class="form-control" name="name" placeholder="Name" value='<?php if (!empty($user[0]['name']))
+                        echo $user[0]['name'] ?>'>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
@@ -51,11 +64,12 @@ if (!empty($_POST['submit'])) {
 
                     <button type="submit" name="submit" value="submit" class="btn btn-primary">Submit</button>
                 </form>
-            <?php } else { ?>
-                <div class="alert alert-success" role="alert">
-                    User not found!
-                </div>
-            <?php } ?>
+        <?php } else { ?>
+            <div class="alert alert-success" role="alert">
+                User not found!
+            </div>
+        <?php } ?>
     </div>
 </body>
+
 </html>
