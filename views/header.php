@@ -7,9 +7,9 @@ if (!empty($_SESSION['id'])) {
     $id = $_SESSION['id'];
     $hash_id = md5($id);
     //$encryptedId = base64_encode($id); //Mã hóa id c1: Sử dụng base64_encode
-    $key = 'khonghack'; // Khóa bí mậts
-    $hmac = hash_hmac('sha256', $hash_id, $key); // Tạo mã băm HMAC
-    $_SESSION['hmac'] = $hmac;
+    // $key = 'khonghack'; // c2: Khóa bí mật
+    // $hmac = hash_hmac('sha256', $hash_id, $key); // c2: Tạo mã băm HMAC
+    // $_SESSION['hmac'] = $hmac; //c2: gán session từ hmac
     $userName = $userModel->findUserById($id); //Tìm kiếm tên user theo id_session
 }
 
@@ -59,10 +59,9 @@ if (!empty($_GET['keyword'])) {
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="view_user.php?id=<?php
-                        //urlencode($encryptedId) // c1: dùng urlencode
-                        echo md5($id)
-
-                            ?>">Profile</a>
+                        // echo $hash_id;
+                        echo $id;
+                        ?>">Profile</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li><a href="login.php">Login</a></li>
@@ -73,11 +72,11 @@ if (!empty($_GET['keyword'])) {
         </div><!-- /.navbar-collapse -->
     </nav>
     <?php if (!empty($_SESSION['message'])) { ?>
-        <div class="alert alert-warning" role="alert">
-            <?php
+    <div class="alert alert-warning" role="alert">
+        <?php
             echo $_SESSION['message'];
             unset($_SESSION['message']);
             ?>
-        </div>
+    </div>
     <?php } ?>
 </div>
