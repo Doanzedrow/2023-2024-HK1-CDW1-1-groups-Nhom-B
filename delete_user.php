@@ -7,7 +7,10 @@ $id = NULL;
 
 if (!empty($_GET['id'])) {
     $id = $_GET['id'];
-    $userModel->deleteUserById($id);//Delete existing user
+    //$sessionId = $_SESSION['id'];   
+    //if ($sessionId == $id) { //Phân quyền người dùng truy cập
+    $userModel->deleteUserById($id); //Delete existing user
+    //}
 }
 header('location: list_users.php');
 ?>
